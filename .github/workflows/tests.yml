@@ -37,7 +37,7 @@ jobs:
         env:
             FIREBASE_SETTINGS: ${{ secrets.FIREBASE_SETTINGS }}
         run: |
-          uvicorn your_fastapi_module:app --host 0.0.0.0 --port 8000 &
+          uvicorn main:app --host 0.0.0.0 --port 8000 &
 
       - name: Run Postman Tests
         run: |
