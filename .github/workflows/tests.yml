@@ -16,13 +16,28 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10.12'
+
+      - name: Install Python Dependencies
+        run: |
+          pip install -r requirements.txt
+
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14' 
+          node-version: '16' 
 
       - name: Install Newman
         run: npm install -g newman
+
+      - name: Start FastAPI Backend
+        env:
+            FIREBASE_SETTINGS: ${{ secrets.FIREBASE_SETTINGS }}
+        run: |
+          uvicorn your_fastapi_module:app --host 0.0.0.0 --port 8000 &
 
       - name: Run Postman Tests
         run: |
