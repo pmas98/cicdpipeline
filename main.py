@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from app.routers.auth import router as auth_router
 from firebase_admin import credentials
 import firebase_admin
-
+from app.middleware import PyInstrumentMiddleWare
 import dotenv
 import os
 import json
@@ -22,3 +22,4 @@ app = FastAPI(
 )
 
 app.include_router(auth_router)
+app.add_middleware(PyInstrumentMiddleWare)
