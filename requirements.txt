@@ -4,3 +4,4 @@ pydantic==2.6.4
 pyinstrument==4.6.2
 python-dotenv==1.0.1
 starlette==0.37.2
+uvicorn==0.29.0
