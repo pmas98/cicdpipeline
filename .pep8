@@ -1,0 +1,9 @@
+[pep8]
+# Maximum line length
+max-line-length = 120
+
+# Ignore certain errors or warnings
+ignore = E226,E302,E41,E702,W291
+
+# Exclude certain files or directories from linting
+exclude = .git,__pycache__,venv
