@@ -1,5 +1,4 @@
-import string
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from app.routers.auth import router as auth_router
 from firebase_admin import credentials
 import firebase_admin
