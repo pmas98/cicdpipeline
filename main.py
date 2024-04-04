@@ -9,6 +9,7 @@ import json
 from starlette.concurrency import iterate_in_threadpool
 
 dotenv.load_dotenv()
+DEBUG = True
 
 LOGGER, ERROR_LOGGER = setup_logging()
 
@@ -26,17 +27,23 @@ app = FastAPI(
 @app.middleware("http")
 async def log_request(request, call_next):
 
-    LOGGER.info(f"Request received: {request.method} {request.url}")
-
     response = await call_next(request)
     response_body = [section async for section in response.body_iterator]
     response.body_iterator = iterate_in_threadpool(iter(response_body))
-    LOGGER.info(f"Request received: {request.method} {request.url} , response_body={response_body[0].decode()}")
-    if response.status_code >= 400:
-        ERROR_LOGGER.error(f"Error: {response.status_code}, response_body={response_body[0].decode()}")
 
+    response_body_json = json.loads(response_body[0].decode())
+    log_message = {"request": f"{request.method} {request.url}", "status_code": response.status_code}
+
+    for key, value in response_body_json.items():
+        log_message[key] = value
+
+    if response.status_code >= 400:
+        ERROR_LOGGER.error(log_message)
+    else:
+        LOGGER.info(log_message)
     return response
 
 app.include_router(auth_router)
 
-app.add_middleware(PyInstrumentMiddleWare)
+if DEBUG:
+    app.add_middleware(PyInstrumentMiddleWare)

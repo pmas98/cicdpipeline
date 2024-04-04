@@ -23,7 +23,7 @@ def setup_logging():
     console_handler = logging.StreamHandler()
     cw_handler = watchtower.CloudWatchLogHandler(
         log_group="auth",
-        stream_name=strftime("%Y-%m-%d-%H-%M-%S")
+        stream_name=strftime("%Y-%m-%d") + "-auth"
     )
     LOGGER.addHandler(console_handler)
     LOGGER.addHandler(cw_handler)
