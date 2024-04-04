@@ -22,7 +22,7 @@ def setup_logging():
     LOGGER.setLevel(logging.INFO)
     console_handler = logging.StreamHandler()
     cw_handler = watchtower.CloudWatchLogHandler(
-        log_group="identity",
+        log_group="auth",
         stream_name=strftime("%Y-%m-%d-%H-%M-%S")
     )
     LOGGER.addHandler(console_handler)
@@ -35,7 +35,7 @@ def setup_logging():
     ERROR_LOGGER.addHandler(error_console_handler)
 
     error_cw_handler = watchtower.CloudWatchLogHandler(
-        log_group="identity-errors",
+        log_group="auth-errors",
         stream_name=strftime("%Y-%m-%d-%H-%M-%S")
     )
     ERROR_LOGGER.addHandler(error_cw_handler)
