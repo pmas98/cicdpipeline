@@ -10,6 +10,7 @@ from time import strftime
 import boto3
 
 dotenv.load_dotenv()
+cloudwatch = boto3.client('cloudwatch')
 
 boto3.Session(
     region_name=os.environ.get("AWS_DEFAULT_REGION"),
@@ -36,11 +37,33 @@ def setup_logging():
 
     error_cw_handler = watchtower.CloudWatchLogHandler(
         log_group="auth-errors",
-        stream_name=strftime("%Y-%m-%d-%H-%M-%S")
+        stream_name=strftime("%Y-%m-%d") + "-auth"
     )
     ERROR_LOGGER.addHandler(error_cw_handler)
 
     return LOGGER, ERROR_LOGGER
+
+def track_error_to_cloudwatch(error_message, ERROR_LOGGER):
+    try:
+        cloudwatch.put_metric_data(
+            Namespace='Custom/Errors',
+            MetricData=[
+                {
+                    'MetricName': 'ErrorEvent',
+                    'Value': 1,
+                    'Unit': 'Count',
+                    'Dimensions': [
+                        {
+                            'Name': 'AuthErrorType',
+                            'Value': str(error_message)
+                        }
+                    ]
+                }
+            ]
+        )
+    except Exception as e:
+        ERROR_LOGGER.exception("Error while tracking error event: %s", e)
+
 
 class PyInstrumentMiddleWare(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> HTMLResponse:

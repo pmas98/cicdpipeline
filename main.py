@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from app.routers.auth import router as auth_router
 from firebase_admin import credentials
 import firebase_admin
-from app.middleware import PyInstrumentMiddleWare, setup_logging
+from app.middleware import PyInstrumentMiddleWare, setup_logging, track_error_to_cloudwatch
 import dotenv
 import os
 import json
@@ -38,7 +38,7 @@ async def log_request(request, call_next):
         log_message[key] = value
 
     if response.status_code >= 400:
-        ERROR_LOGGER.error(log_message)
+        track_error_to_cloudwatch(response.status_code, ERROR_LOGGER)
     else:
         LOGGER.info(log_message)
     return response
