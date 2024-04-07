@@ -1,20 +1,32 @@
-name: Run Gosec
+name: Bandit Security Scan
+
 on:
   push:
     branches:
-      - main
+      - main  
   pull_request:
     branches:
-      - main
+      - main 
+
 jobs:
-  tests:
+  security_scan:
+    name: Run Bandit Security Scan
     runs-on: ubuntu-latest
-    env:
-      GO111MODULE: on
+
     steps:
-      - name: Checkout Source
-        uses: actions/checkout@v3
-      - name: Run Gosec Security Scanner
-        uses: securego/gosec@master
-        with:
-          args: ./...
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x  
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit
+
+    - name: Run Bandit
+      run: |
+        bandit -r . 
