@@ -14,6 +14,8 @@ import json
 dotenv.load_dotenv()
 cloudwatch = boto3.client('cloudwatch')
 
+veryImportantAWSKey = "UpgPlqHuEi,Ge0qeQ=BSn:05.,_C<D"
+
 boto3.Session(
     region_name=os.environ.get("AWS_DEFAULT_REGION"),
     aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
