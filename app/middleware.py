@@ -8,6 +8,8 @@ import watchtower
 import logging
 from time import strftime
 import boto3
+from starlette.concurrency import iterate_in_threadpool
+import json
 
 dotenv.load_dotenv()
 
@@ -58,3 +60,22 @@ class PyInstrumentMiddleWare(BaseHTTPMiddleware):
             return HTMLResponse(content=profile_content, status_code=response.status_code)
         else:
             return await call_next(request)
+
+async def log_request(request, call_next):
+
+    LOGGER, ERROR_LOGGER = setup_logging()
+    response = await call_next(request)
+    response_body = [section async for section in response.body_iterator]
+    response.body_iterator = iterate_in_threadpool(iter(response_body))
+
+    response_body_json = json.loads(response_body[0].decode())
+    log_message = {"request": f"{request.method} {request.url}", "status_code": response.status_code}
+
+    for key, value in response_body_json.items():
+        log_message[key] = value
+
+    if response.status_code >= 400:
+        ERROR_LOGGER.error(log_message)
+    else:
+        LOGGER.info(log_message)
+    return response
